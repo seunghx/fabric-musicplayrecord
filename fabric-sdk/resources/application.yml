@@ -1,0 +1,36 @@
+server:
+  port: 8081
+
+spring:
+  mvc:
+    view:
+        prefix: /jsp/
+        suffix: .jsp
+
+#Encoding
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+hyperledger:
+  chaincode:
+    name: meloncc
+  org:
+    admin:
+      name: admin
+      password: adminpw
+      account: admin
+    affiliation: Org1
+    mspId: Org1MSP
+    caServerUrl: http://localhost:7054
+
+logging:
+  level:
+    org:
+      springframework: DEBUG
+
+application:
+    date:
+        format: yyyy-MM-dd

@@ -1,0 +1,8 @@
+{
+  "index" : {
+    "fields" : ["docType", "userId", "listenDateTime"]
+  },
+  "ddoc" : "indexMusicWithUserDoc",
+  "name" : "indexMusicWithUser",
+  "type" : "json"
+}
