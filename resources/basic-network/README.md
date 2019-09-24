@@ -1,4 +1,4 @@
-## Basic Network Config
+## (Customized) Basic Network Config
 
 Note that this basic configuration uses pre-generated certificates and
 key material, and also has predefined transactions to initialize a 
