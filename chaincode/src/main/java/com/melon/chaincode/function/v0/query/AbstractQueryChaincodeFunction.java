@@ -7,8 +7,8 @@ import com.melon.chaincode.function.AbstractChaincodeFunction;
 import com.melon.chaincode.model.query.Query;
 import com.melon.chaincode.util.ResponseUtil;
 import com.melon.chaincode.util.Util;
+
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.fabric.shim.Chaincode;
 import org.hyperledger.fabric.shim.Chaincode.Response;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
@@ -21,7 +21,7 @@ public abstract class AbstractQueryChaincodeFunction extends AbstractChaincodeFu
     protected static final String MUSIC_DOC_TYPE = "music";
 
     @Override
-    protected Chaincode.Response executeChaincode(ChaincodeStub stub, List<String> parameters) {
+    protected Response executeChaincode(ChaincodeStub stub, List<String> parameters) {
         Query query = makeQuery(parameters);
         int pageSize = getPageSizeFrom(parameters);
         String bookmark = getBookmarkFrom(parameters);

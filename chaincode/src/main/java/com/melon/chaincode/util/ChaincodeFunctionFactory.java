@@ -3,6 +3,7 @@ package com.melon.chaincode.util;
 import com.melon.chaincode.function.v0.GetTransactionByKeyFunction;
 import com.melon.chaincode.function.v0.RegisterMusicPlayRecordChaincodeFunction;
 import com.melon.chaincode.function.ChaincodeFunction;
+import com.melon.chaincode.function.v0.AggregateByDateChaincodeFunction;
 import com.melon.chaincode.function.v0.query.GetMusicPlayRecordByMusicChaincodeFunction;
 import com.melon.chaincode.function.v0.query.GetMusicPlayRecordByUserChaincodeFunction;
 import com.melon.chaincode.function.v0.query.WithDateQueryChaincodeFunction;
@@ -47,10 +48,15 @@ public class ChaincodeFunctionFactory {
             return new WithDateQueryChaincodeFunction(getMusicPlayRecordByUserFunction);
         } else if ("getTransactionRecordByKey".equals(functionName)) {
             return getTransactionByKeyFunction;
+        }else if("getAggregationByMusic".equals(functionName)){
+            return new AggregateByDateChaincodeFunction(new WithDateQueryChaincodeFunction(getMusicPlayRecordByMusicFunction));
+        }else if("getAggregationByUser".equals(functionName)){
+            return new AggregateByDateChaincodeFunction(new WithDateQueryChaincodeFunction(getMusicPlayRecordByUserFunction));
+        }
 
         /*************************************** chaincode version 2 *******************************************/
 
-        }else if("addMusicPlayingRecord".equals(functionName)){
+        else if("addMusicPlayingRecord".equals(functionName)){
             return addMusicPlayingRecordFunction;
         }else if("getMusicPlayingHistoryByMusicAndDate".equals(functionName)){
             return getMusicPlayingHistoryByMusicAndDate;

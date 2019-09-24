@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -63,6 +60,7 @@ public class Query {
         }
 
         public QueryBuilder selector(String property, Object propertyValue){
+
             selectors.put(property, propertyValue);
 
             return this;

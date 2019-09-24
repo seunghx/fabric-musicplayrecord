@@ -37,25 +37,18 @@ public class WithDateQueryChaincodeFunction extends DecoratingQueryChaincodeFunc
     }
 
     @Override
-    protected Query makeQuery(List<String> parameters){
+    public Query makeQuery(List<String> parameters){
         Query existingQuery = super.makeQuery(parameters);
 
         String dateFormat = getDateFormatFrom(parameters);
-        LocalDateTime midNightOfDay = getMidNightOfDay(dateFormat);
+        log.error("zzzzzzzzzzzzzzzzzzz ::::::::  {}", dateFormat);
+       LocalDateTime midNightOfDay = getMidNightOfDay(dateFormat);
         LocalDateTime midNightOfNextDay = getMidNightOfNextDay(midNightOfDay);
 
         return QueryBuilder
                 .from(existingQuery)
                 .selector("listenDateTime", new PeriodCriteria(midNightOfDay, midNightOfNextDay))
                 .buildQuery();
-    }
-
-    private LocalDateTime getMidNightOfDay(String dateFormat){
-        return LocalDate.parse(dateFormat, dateFormatter).atStartOfDay();
-    }
-
-    private LocalDateTime getMidNightOfNextDay(LocalDateTime midNightOfDay){
-        return midNightOfDay.plusDays(1);
     }
 
     private String getDateFormatFrom(List<String> parameters){
@@ -69,4 +62,13 @@ public class WithDateQueryChaincodeFunction extends DecoratingQueryChaincodeFunc
     private int getDateFormatIndex(List<String> parameters){
         return parameters.size() -1;
     }
+
+    private LocalDateTime getMidNightOfDay(String dateFormat){
+        return LocalDate.parse(dateFormat, dateFormatter).atStartOfDay();
+    }
+
+    private LocalDateTime getMidNightOfNextDay(LocalDateTime midNightOfDay){
+        return midNightOfDay.plusDays(1);
+    }
+
 }

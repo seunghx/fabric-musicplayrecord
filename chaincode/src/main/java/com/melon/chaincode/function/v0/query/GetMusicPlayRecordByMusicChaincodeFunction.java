@@ -1,6 +1,5 @@
 package com.melon.chaincode.function.v0.query;
 
-import com.melon.chaincode.function.v0.query.AbstractQueryChaincodeFunction;
 import com.melon.chaincode.model.query.Query;
 import com.melon.chaincode.model.query.Query.QueryBuilder;
 import com.melon.chaincode.model.query.SortDirection;
@@ -22,7 +21,7 @@ public class GetMusicPlayRecordByMusicChaincodeFunction extends AbstractQueryCha
          *  Because of chaincode api spec that receives parameters as String List,
          *  it is required to explicitly assign parameter's order(or index location)
          */
-        String musicId = parameters.get(0);
+        String musicId = getMusicIdFrom(parameters);
 
         return QueryBuilder.newQueryBuilder(MUSIC_DOC_TYPE)
                            .selector("musicInfo.musicId", musicId)
@@ -30,4 +29,9 @@ public class GetMusicPlayRecordByMusicChaincodeFunction extends AbstractQueryCha
                            .sortBy("listenDateTime", SortDirection.DESC)
                            .buildQuery();
     }
+
+    private String getMusicIdFrom(List<String> parameters){
+        return parameters.get(0);
+    }
+
 }
