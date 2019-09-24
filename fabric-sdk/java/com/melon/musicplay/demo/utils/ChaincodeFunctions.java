@@ -9,4 +9,7 @@ public class ChaincodeFunctions {
     public static final String ADD_MUSIC_PLAY_RECORD = "registerMusicPlayRecord";
 
     public static final String GET_TRANSACTION = "getTransactionRecordByKey";
+    public static final String GET_AGGREGATION_BY_MUSIC = "getAggregationByMusic";
+    public static final String GET_AGGREGATION_BY_USER = "getAggregationByUser";
+
 }

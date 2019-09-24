@@ -47,6 +47,8 @@ public class MusicPlayRecordSearchArgumentResolver implements HandlerMethodArgum
                 
             SearchType searchType = SearchType.valueOf(webRequest.getParameter("searchType"));
             
+            log.debug("Requested search type : {}", searchType);
+
             switch(searchType){
                 case SEARCH_BY_MUSIC:
                 case SEARCH_BY_USER:
@@ -119,5 +121,7 @@ public class MusicPlayRecordSearchArgumentResolver implements HandlerMethodArgum
         }
     }
 
-    //custom validator 생성
+   
+    //TODO custom validator 생성
+    
 }

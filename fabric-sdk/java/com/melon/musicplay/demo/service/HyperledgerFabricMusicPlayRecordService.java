@@ -1,5 +1,6 @@
 package com.melon.musicplay.demo.service;
 
+import com.melon.musicplay.demo.model.AggregatedMusicTransactionInfo;
 import com.melon.musicplay.demo.model.MusicInfo;
 import com.melon.musicplay.demo.model.MusicPlayRecord;
 import com.melon.musicplay.demo.model.MusicPlayRecordResponse;
@@ -24,12 +25,12 @@ import org.hyperledger.fabric.sdk.ChaincodeResponse.Status;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static com.melon.musicplay.demo.model.MusicPlayRecordResponse.EMPTY_MUSIC_PLAY_RESPONSE;
 import static com.melon.musicplay.demo.model.MusicPlayTransaction.EMPTY_MUSIC_PLAY_TRANSACTION;
+import static com.melon.musicplay.demo.model.AggregatedMusicTransactionInfo.EMPTY_AGGREGATED_RESULT;
 
 @Slf4j
 public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordBlockChainService {
@@ -44,10 +45,7 @@ public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordB
     public HyperledgerFabricMusicPlayRecordService(HFClient client, Channel channel) {
         this.client = client;
         this.channel = channel;
-        objectMapper = createObjectMapper();
-        Properties pr = channel.getServiceDiscoveryProperties();
-        log.error("{}", pr);
-        
+        objectMapper = createObjectMapper();        
     }
 
     private ObjectMapper createObjectMapper(){
@@ -116,8 +114,24 @@ public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordB
     public MusicPlayTransaction getMusicPlayTransaction(String musicRecordKey) {
         QueryByChaincodeRequest request = newQueryProposalRequest(ChaincodeFunctions.GET_TRANSACTION, musicRecordKey);
 
-        return getChaincodeResponse(request, MusicPlayTransaction.class).orElse(EMPTY_MUSIC_PLAY_TRANSACTION);
-	}
+        return getChaincodeResponse(request, MusicPlayTransaction.class)
+                    .orElse(EMPTY_MUSIC_PLAY_TRANSACTION);
+    }
+    
+    @Override
+    public AggregatedMusicTransactionInfo getAggregatedMusicTransactionInfoByMusic(String aggregationKey){
+        QueryByChaincodeRequest request = newQueryProposalRequest(ChaincodeFunctions.GET_AGGREGATION_BY_MUSIC, aggregationKey);
+
+        return getChaincodeResponse(request, AggregatedMusicTransactionInfo.class).orElse(EMPTY_AGGREGATED_RESULT);
+    
+    }
+    @Override
+    public AggregatedMusicTransactionInfo getAggregatedMusicTransactionInfoByUser(String aggregationKey){
+        QueryByChaincodeRequest request = newQueryProposalRequest(ChaincodeFunctions.GET_AGGREGATION_BY_USER, aggregationKey);
+
+        return getChaincodeResponse(request, AggregatedMusicTransactionInfo.class).orElse(EMPTY_AGGREGATED_RESULT);
+    
+    }
 
     private QueryByChaincodeRequest newQueryProposalRequest(String functionName, String... chaincodeParams) {
         QueryByChaincodeRequest request = client.newQueryProposalRequest();
@@ -127,6 +141,7 @@ public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordB
 
         return request;
     }
+
     
     private <T> Optional<T> getChaincodeResponse(QueryByChaincodeRequest request, Class<T> returnType){
         try{
@@ -140,25 +155,26 @@ public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordB
 
         return responses.stream()
                         .map(response -> response.getMessage())
-                        .map(message -> {
-                            log.error("Transaction : {}", message);
-                            return message;
-                        })
                         .map(wrappedFunction(message -> objectMapper.readValue(message, returnType)))
                         .findAny();
     }
+    
     @Override
     public void addMusicPlayRecord(MusicInfo musicInfo, String userId){
         String musicPlayRecordKey = getRandomId();
         MusicPlayRecord musicPlayRecord = new MusicPlayRecord(musicInfo, userId, musicPlayRecordKey);
         String jsonMusicPlayRecord= convertMusicPlayRecordToJson(musicPlayRecord);
 
-        log.info("New music play record :: {}", jsonMusicPlayRecord);
+        log.error("#########################################");
+        log.error("Adding new music play record : {}", jsonMusicPlayRecord);
+        log.error("#########################################");
 
         TransactionProposalRequest request =
             newTransactionProposalRequest(ChaincodeFunctions.ADD_MUSIC_PLAY_RECORD, musicPlayRecordKey, jsonMusicPlayRecord);
               
        sendTransactionProposalRequest(request);
+
+       log.info("Successful adding new music play record");
     }
 
     private String convertMusicPlayRecordToJson(MusicPlayRecord musicPlayRecord) {
@@ -176,7 +192,6 @@ public class HyperledgerFabricMusicPlayRecordService implements MusicPlayRecordB
     private void sendTransactionProposalRequest(TransactionProposalRequest request){
         try{
             Collection<ProposalResponse> proposalResponses = channel.sendTransactionProposal(request);
-            log.error(">>>>>>>>>> Size : {}", proposalResponses.size());
             CompletableFuture<TransactionEvent> events = channel.sendTransaction(proposalResponses);
         }catch(Exception e){
             throw new RuntimeException(e);

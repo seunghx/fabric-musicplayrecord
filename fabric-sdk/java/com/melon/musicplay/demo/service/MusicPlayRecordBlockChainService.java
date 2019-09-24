@@ -1,5 +1,6 @@
 package com.melon.musicplay.demo.service;
 
+import com.melon.musicplay.demo.model.AggregatedMusicTransactionInfo;
 import com.melon.musicplay.demo.model.MusicInfo;
 import com.melon.musicplay.demo.model.MusicPlayRecordResponse;
 import com.melon.musicplay.demo.model.MusicPlayRecordSearchRequest;
@@ -11,12 +12,13 @@ public interface MusicPlayRecordBlockChainService {
     MusicPlayRecordResponse getMusicPlayRecordByMusicId(MusicPlayRecordSearchRequest searchRequest);
     MusicPlayRecordResponse getMusicPlayRecordByMusicIdAndDate(
                                                 MusicPlayRecordSearchRequestWithDate searchRequest);
-
     MusicPlayRecordResponse getMusicPlayRecordByUserId(MusicPlayRecordSearchRequest searchRequest);
     MusicPlayRecordResponse getMusicPlayRecordByUserIdAndDate(MusicPlayRecordSearchRequestWithDate searchRequest);
-    
+
     void addMusicPlayRecord(MusicInfo musicInfo, String userId);
 
     MusicPlayTransaction getMusicPlayTransaction(String musicId);
+    AggregatedMusicTransactionInfo getAggregatedMusicTransactionInfoByMusic(String aggregationKey);
+    AggregatedMusicTransactionInfo getAggregatedMusicTransactionInfoByUser(String aggregationKey);
 
 }

@@ -54,15 +54,20 @@ public class DemoApplication implements WebMvcConfigurer{
 
 		HyperledgerFabricMusicPlayRecordService service = 
 			new HyperledgerFabricMusicPlayRecordService(client, createMusicChannel(client));
-		
+        
+        log.info("Service {} created successfully");
 		return service;
 	}
 
     private HFClient createHFClient() {
         HFClient newClient = HFClient.createNewInstance();
+
         try {
             newClient.setCryptoSuite(defaultCryptoSuite());
             newClient.setUserContext(accountService.getAdminContext());
+
+            log.info("HFClient : {} created successfully", newClient);
+
             return newClient;
         } catch (Exception e) {
             throw new RuntimeException("Exception occured while trying to create HFClient instance", e);
@@ -74,6 +79,9 @@ public class DemoApplication implements WebMvcConfigurer{
             Channel channel = client.loadChannelFromConfig("melonchannel",
                     getNetworkConfig("network-config.yaml"));
             channel.initialize();
+
+            log.info("Channel initialized successfully");
+
             return channel;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -84,7 +92,7 @@ public class DemoApplication implements WebMvcConfigurer{
         try {
             return NetworkConfig.fromYamlFile(getChannelConfigFile(fileName));
         } catch (Exception e) {
-            throw new RuntimeException("Exception occured while trying to create network configuration", e);
+            throw new RuntimeException("Exception occurred while trying to create network configuration", e);
         }
     }
 

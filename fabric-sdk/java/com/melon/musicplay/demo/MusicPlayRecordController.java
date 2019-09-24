@@ -1,11 +1,14 @@
 package com.melon.musicplay.demo;
 
+import com.melon.musicplay.demo.model.AggregatedMusicTransactionInfo;
 import com.melon.musicplay.demo.model.MusicInfo;
 import com.melon.musicplay.demo.model.MusicPlayRecordResponse;
 import com.melon.musicplay.demo.model.MusicPlayRecordSearchRequest;
 import com.melon.musicplay.demo.model.MusicPlayTransaction;
 import com.melon.musicplay.demo.model.MusicPlayRecordSearchRequest.MusicPlayRecordSearchRequestWithDate;
 import com.melon.musicplay.demo.service.MusicPlayRecordBlockChainService;
+import com.melon.musicplay.demo.utils.SearchType;
+
 import static com.melon.musicplay.demo.utils.SearchType.*;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -50,7 +54,7 @@ public class MusicPlayRecordController {
     public ResponseEntity<MusicPlayRecordResponse> getMusicPlayRecord(MusicPlayRecordSearchRequest searchRequest){
         MusicPlayRecordResponse records = null;
 
-        log.error("{}", searchRequest);
+        log.debug("Request : {}", searchRequest);
 
         if(SEARCH_BY_MUSIC == searchRequest.getSearchType()){
             records = musicPlayRecordService.getMusicPlayRecordByMusicId(searchRequest);
@@ -64,20 +68,39 @@ public class MusicPlayRecordController {
                         (MusicPlayRecordSearchRequestWithDate) searchRequest);
         }
 
-        log.debug("Retrieved music play records : {}", records);
+        log.error("============================================");
+        log.error("Retrieved music play records : {}", records);
+        log.error("============================================");
 
         return newOKResponse(records);
     }
 
     @GetMapping(MUSIC_PLAY_RECORDS_PATH + "/transaction/{musicPlayRecordKey}")
-    public ResponseEntity<MusicPlayTransaction> getTransactionIdForMusic(
+    public ResponseEntity<MusicPlayTransaction> getTransactionForMusicPlayRecord(
                                                     @PathVariable("musicPlayRecordKey") String musicPlayRecordKey){
                                                         
         MusicPlayTransaction transactionInfo = musicPlayRecordService.getMusicPlayTransaction(musicPlayRecordKey);
 
-        log.debug("Retrieved transaction info : {}", transactionInfo);
+        log.error("============================================");
+        log.error("Retrieved transaction info : {}", transactionInfo);
+        log.error("============================================");
 
         return newOKResponse(transactionInfo);
+    }
+
+    @GetMapping(MUSIC_PLAY_RECORDS_PATH + "/aggregation")
+    public ResponseEntity<AggregatedMusicTransactionInfo> getAggregatedMusicTransactionInfo(
+                                                        @RequestParam("key") String aggregationKey,
+                                                        @RequestParam("searchType") String searchRequestType){
+        SearchType searchType = SearchType.valueOf(searchRequestType);
+
+        if(searchType == SEARCH_BY_MUSIC_WITH_DATE){
+            return newOKResponse(musicPlayRecordService.getAggregatedMusicTransactionInfoByMusic(aggregationKey));
+        }else if(searchType == SEARCH_BY_USER_WITH_DATE){
+            return newOKResponse(musicPlayRecordService.getAggregatedMusicTransactionInfoByUser(aggregationKey));
+        }else{
+            throw new IllegalArgumentException("Unsupported search type for aggregation");
+        }
     }
 
     private <T> ResponseEntity<T> newOKResponse(T payload){
